@@ -14,16 +14,8 @@ class Alert extends Model
     protected $table = 'alerts';
     protected $primaryKey = 'alert_id';
 
-    protected $fillable = [
-        'bin_id', 
-        'alert_type', 
-        'message', 
-        'is_resolved', 
-        'created_at', 
-        'updated_at'
-    ];
+    protected $fillable = ['bin_id', 'alert_type', 'message', 'is_resolved', 'created_at', 'updated_at'];
 
-    // Relationship to link an Alert to a Bin
     public function bin()
     {
         return $this->belongsTo(SmartBin::class, 'bin_id', 'bin_id');
@@ -32,9 +24,13 @@ class Alert extends Model
     public static function getAlertList($request)
     {
         try {
-            // Get alerts and join with bin data so we know which bin has the alert
+            $userId = auth()->id();
+
             $alerts = self::with('bin')
-                ->where('is_resolved', 0) // Only show unresolved alerts
+                ->whereHas('bin', function($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                ->where('is_resolved', 0)
                 ->orderBy('created_at', 'desc')
                 ->get();
 

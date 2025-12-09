@@ -9,43 +9,38 @@ use App\Http\Requests\Bin\AddBinRequest;
 
 class SmartBinController extends Controller
 {
-    /**
-     * Get Dashboard Stats
-     */
+
     public function getDashboardStats()
     {
         return SmartBin::getDashboardStats();
     }
 
-    /**
-     * Get List of Bins
-     */
     public function getBinList(Request $request)
     {
         return SmartBin::getBinList($request);
     }
 
-    /**
-     * Add a New Bin
-     */
     public function addBin(AddBinRequest $request)
     {
-        // The Request class handles validation before reaching here
         $result = SmartBin::addBin($request);
         return $result;
     }
 
-    /**
-     * Get List of Alerts
-     */
+    public function updateBin(UpdateBinRequest $request, $id)
+    {
+        return SmartBin::updateBin($request, $id);
+    }
+
+    public function deleteBin($id)
+    {
+        return SmartBin::deleteBin($id);
+    }
+
     public function getAlertList(Request $request)
     {
         return Alert::getAlertList($request);
     }
     
-    /**
-     * Get Details for a single bin (Optional)
-     */
     public function getBinDetails($id)
     {
         $bin = SmartBin::find($id);
