@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2025 at 08:08 AM
+-- Generation Time: Dec 09, 2025 at 08:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -42,8 +42,9 @@ CREATE TABLE `alerts` (
 --
 
 INSERT INTO `alerts` (`alert_id`, `bin_id`, `alert_type`, `message`, `is_resolved`, `created_at`, `updated_at`) VALUES
-(1, 1, 'High Fill', 'Bin is approaching capacity', 0, '2025-11-27 05:52:51', '2025-11-27 05:52:51'),
-(2, 3, 'Offline', 'Sensor not responding', 0, '2025-11-27 05:52:51', '2025-11-27 05:52:51');
+(1, 2, 'Critical Fill', 'Bin 102 (Cafeteria) is reaching capacity (92%).', 0, '2025-12-09 05:14:53', '2025-12-09 05:14:53'),
+(2, 4, 'Low Battery', 'Bin 104 (Parking Lot) battery is critical (12%).', 0, '2025-12-09 05:14:53', '2025-12-09 05:14:53'),
+(3, 4, 'Offline', 'Bin 104 sensor not responding for > 1 hour.', 0, '2025-12-09 05:14:53', '2025-12-09 05:14:53');
 
 -- --------------------------------------------------------
 
@@ -53,6 +54,7 @@ INSERT INTO `alerts` (`alert_id`, `bin_id`, `alert_type`, `message`, `is_resolve
 
 CREATE TABLE `bins` (
   `bin_id` int(11) NOT NULL,
+  `user_id` bigint(20) UNSIGNED DEFAULT NULL,
   `bin_identifier` varchar(50) NOT NULL,
   `location` varchar(100) DEFAULT NULL,
   `fill_level` int(11) DEFAULT 0,
@@ -66,11 +68,12 @@ CREATE TABLE `bins` (
 -- Dumping data for table `bins`
 --
 
-INSERT INTO `bins` (`bin_id`, `bin_identifier`, `location`, `fill_level`, `battery_level`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'BIN-001', 'Block A - Cafeteria', 85, 100, 'Active', '2025-11-27 05:52:51', '2025-11-27 05:52:51'),
-(2, 'BIN-002', 'Lobby Level 1', 20, 100, 'Active', '2025-11-27 05:52:51', '2025-11-27 05:52:51'),
-(3, 'BIN-003', 'Park Entrance', 95, 100, 'Offline', '2025-11-27 05:52:51', '2025-11-27 05:52:51'),
-(4, 'BIN-004', 'EEL', 0, 100, 'Active', '2025-11-26 22:46:14', '2025-11-26 22:46:14');
+INSERT INTO `bins` (`bin_id`, `user_id`, `bin_identifier`, `location`, `fill_level`, `battery_level`, `status`, `created_at`, `updated_at`) VALUES
+(1, 2, 'BIN-101', 'Main Entrance', 45, 98, 'Active', '2025-12-09 05:14:52', '2025-12-09 05:27:11'),
+(2, 2, 'BIN-102', 'Cafeteria Zone A', 92, 85, 'Active', '2025-12-09 05:14:52', '2025-12-09 05:27:11'),
+(3, 2, 'BIN-103', 'Library Hallway', 15, 100, 'Active', '2025-12-09 05:14:52', '2025-12-09 05:27:11'),
+(4, 2, 'BIN-104', 'Parking Lot B', 0, 12, 'Offline', '2025-12-09 05:14:52', '2025-12-09 05:27:11'),
+(5, 2, 'BIN-105', 'Executive Wing', 60, 75, 'Maintenance', '2025-12-09 05:14:52', '2025-12-09 05:27:11');
 
 -- --------------------------------------------------------
 
@@ -200,6 +203,15 @@ CREATE TABLE `personal_access_tokens` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `personal_access_tokens`
+--
+
+INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
+(4, 'App\\Models\\User', 4, 'auth_token', '1abdca556c69b049b20cca943528d8c14ed0a1c940fbc9aa3806da874396b150', '[\"*\"]', '2025-12-08 21:28:58', NULL, '2025-12-08 21:28:58', '2025-12-08 21:28:58'),
+(6, 'App\\Models\\User', 6, 'auth_token', '0e1a724afc3b1146af45720d57fbcf8c38e9ef3f1a749efecc9506f6ee354690', '[\"*\"]', '2025-12-08 21:33:24', NULL, '2025-12-08 21:33:23', '2025-12-08 21:33:24'),
+(12, 'App\\Models\\User', 10, 'auth_token', '377ef31f39b568b871889fc3b25be7fc1cad58bcce934875aacb682642fc52b5', '[\"*\"]', '2025-12-08 23:32:57', NULL, '2025-12-08 23:32:57', '2025-12-08 23:32:57');
+
 -- --------------------------------------------------------
 
 --
@@ -234,10 +246,20 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
   `password` varchar(255) NOT NULL,
+  `verification_code` varchar(6) DEFAULT NULL,
+  `status` varchar(20) DEFAULT 'active',
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `verification_code`, `status`, `remember_token`, `created_at`, `updated_at`) VALUES
+(2, 'Tan', 'admin@gmail.com', NULL, '$2y$12$j5fB0aqeScPub8IbSjIb6.jpObHe9J.gmt/2WL1va8pg8wZAYajzC', NULL, 'active', NULL, '2025-12-08 21:24:09', '2025-12-08 21:24:09'),
+(10, 'Tan', 'tanmengwai28862@gmail.com', '2025-12-08 23:29:52', '$2y$12$.2gi0aMLmFm6uvwB3GzHEesHNJj1fqG0PPtF9RfBKu59ipraF5F.2', NULL, 'active', NULL, '2025-12-08 23:29:34', '2025-12-08 23:29:52');
 
 --
 -- Indexes for dumped tables
@@ -255,7 +277,8 @@ ALTER TABLE `alerts`
 --
 ALTER TABLE `bins`
   ADD PRIMARY KEY (`bin_id`),
-  ADD UNIQUE KEY `bin_identifier` (`bin_identifier`);
+  ADD UNIQUE KEY `bin_identifier` (`bin_identifier`),
+  ADD KEY `fk_bin_user` (`user_id`);
 
 --
 -- Indexes for table `cache`
@@ -333,13 +356,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `alerts`
 --
 ALTER TABLE `alerts`
-  MODIFY `alert_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `alert_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `bins`
 --
 ALTER TABLE `bins`
-  MODIFY `bin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `bin_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
@@ -363,13 +386,13 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `personal_access_tokens`
 --
 ALTER TABLE `personal_access_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -380,6 +403,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `alerts`
   ADD CONSTRAINT `alerts_ibfk_1` FOREIGN KEY (`bin_id`) REFERENCES `bins` (`bin_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `bins`
+--
+ALTER TABLE `bins`
+  ADD CONSTRAINT `fk_bin_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
