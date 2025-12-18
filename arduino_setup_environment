@@ -3,14 +3,55 @@ TO RUN ARDUINO CODE, YOU NEED TO SETUP ARDUINO SOFTWARE AND DRIVER
 https://www.arduino.cc/en/software/
 
 #HARDWARE NEEDED IN THIS PROJECT
-1. ARDUINO MEGA
-2. ESP32
-3. 3 LED
-4. BREADBOARD
-5. LCD DISPLAY I2C
-6. 2 ULTRASONIC DISTANCE SENSOR
-7. SERVO MOTOR
-8. 26 JUMPER WIRES
+1. ARDUINO MEGA (Controller of sensor and actuator)
+2. ESP32 (Wifi Connector for Arduino MEGA)
+3. 3 LED (Alert user about the bin level)
+4. BREADBOARD (Allow Wires can be connected more easily)
+5. LCD DISPLAY I2C (Show user the exact bin level)
+6. 2 ULTRASONIC DISTANCE SENSOR (Ultrasonic Distance Sensor 1 for Detect Object infront of the dustbin to allow servo motor to work, Ultrasonic Distance Sensor 2 for Detect the bin level)
+7. SERVO MOTOR (Control the bin lid to open)
+8. 26 JUMPER WIRES (connect each hardware and build circuit)
 
-#DRIVER NEED TO DOWNLOAD TO RUN ESP32 CODE
+#DRIVER NEED TO DOWNLOAD TO RUN ESP32 CODE, CAN FOUND IN https://www.silabs.com/software-and-tools/usb-to-uart-bridge-vcp-drivers?tab=downloads
+CP210x_Universal_Windows_Driver.zip
+
+#PROTOCOL USED
+1. UART (Communication between Arduino and ESP32)
+2. CoAP (Communication between ESP32 to PHP_receiver to pass data to database)
+
+#STEP TO BUILD CONNECTION BETWEEN ARDUINO MEGA AND ESP32
+#Arduino TX must to ESP32 RX, Arduino RX must to ESP32 TX
+#REFERENCES VIDEO: https://www.youtube.com/watch?v=YVPumD16Y_Y
+1. CONNECT ARDUINO GROUND PIN TO ESP32 GROUND PIN
+2. CONNECT ARDUINO PIN TX1(18) TO ESP32 PIN RX2(16)
+3. CONNECT ARDUINO PIN RX1(19) TO ESP32 PIN TX2(17)
+4. CODE
+ESP32:
+void setup() {
+  Serial.begin(115200);             // USB debug to laptop
+  Serial2.begin(9600, SERIAL_8N1, RXp2, TXp2); // UART pins
+  Serial.println("ESP32 listening on Serial2...");
+}
+
+void loop() {
+  if (Serial2.available()) {
+    String msg = Serial2.readStringUntil('\n');  // read until newline
+    Serial.print("Message Received: ");
+    Serial.println(msg);
+  }
+}
+
+ARDUINO:
+void setup() {
+  Serial1.begin(9600);  // Use Serial1 for TX1/RX1 pins
+}
+
+void loop() {
+  Serial1.println("Hello Boss");  // Send to ESP32
+  delay(1500);
+}
+
+
+
+
 
