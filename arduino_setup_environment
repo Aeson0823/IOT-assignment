@@ -51,7 +51,9 @@ void loop() {
   delay(1500);
 }
 
-#Test WIFI connection in ESP32, Please do not use 5G connetion, ESP32 does not allow 5G connection and it is not stable for ESP32
+#Test WIFI connection in ESP32
+#Please do not use 5G connetion!!!!! ESP32 does not allow 5G connection and it is not stable for ESP32
+#----------------------------------------------CODE BELOW-----------------------------------------------#
 #include <WiFi.h>  // <--- THIS IS THE MISSING LINE
 
 // ================= CONFIGURATION =================
