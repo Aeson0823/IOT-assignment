@@ -106,11 +106,6 @@ const Sidebar = ({ currentView, setCurrentView, onLogout }) => (
         onClick={() => setCurrentView("alerts")}>
         Alerts
       </button>
-      <button 
-        className={currentView === "settings" ? "active" : ""} 
-        onClick={() => setCurrentView("settings")}>
-        Settings
-      </button>
     </div>
     
     {/* Logout Button at the bottom */}
